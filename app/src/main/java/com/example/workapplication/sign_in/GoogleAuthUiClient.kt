@@ -14,7 +14,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
 class GoogleAuthUiClient(
-    private val context: Context,
     private val oneTapClient: SignInClient
 ) {
     private val auth = Firebase.auth
@@ -43,7 +42,6 @@ class GoogleAuthUiClient(
                     UserData(
                         userId = uid,
                         username = displayName,
-                        profilePictureUrl = photoUrl?.toString()
                     )
                 },
                 errorMessage = null
@@ -71,8 +69,7 @@ class GoogleAuthUiClient(
     fun getSignedInUser(): UserData? = auth.currentUser?.run {
         UserData(
             userId = uid,
-            username = displayName,
-            profilePictureUrl = photoUrl?.toString()
+            username = displayName
         )
     }
 

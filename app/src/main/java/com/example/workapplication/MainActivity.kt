@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -27,11 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,23 +82,27 @@ class MainActivity : ComponentActivity() {
 
                             Box(Modifier.fillMaxSize()) {
 
-                                Column(Modifier.align(Alignment.Center)) {
+                                Column(Modifier.align(Alignment.Center).padding(start =36.dp ,end  =36.dp)) {
                                     Text(text = "Register" , fontSize = 24.sp, modifier = Modifier.padding(bottom  =20.dp))
 
                                     TextField(
                                         value = email.value,
                                         onValueChange = { email.value = it },
-                                        modifier = Modifier.padding(bottom = 10.dp),
+                                        modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(),
                                         label  = { Text("Email") }
                                     )
                                     TextField(
+                                        modifier =Modifier.fillMaxWidth().padding(bottom =16.dp),
                                         value = password.value,
                                         onValueChange = { password.value = it },
                                                 label  = { Text("Password") })
                                     Button(onClick = {
                                         signInUser(navController, email.value, password.value)
                                     } ,modifier = Modifier.align(
-                                        Alignment.CenterHorizontally)) { Text("Register") }
+                                        Alignment.CenterHorizontally).fillMaxWidth(), shape =RectangleShape) { Text("Register")
+
+                                    }
+
 
                                 }
                             }
@@ -119,7 +126,7 @@ class MainActivity : ComponentActivity() {
 //                            )
                             
                             
-                            Profile()
+                            Profile(navController)
                         }
                         composable("log_in") {
                             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -165,7 +172,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             Box(Modifier.fillMaxSize()) {
-                                Column(Modifier.align(Alignment.Center)) {
+                                Column(Modifier.align(Alignment.Center).padding(start =36.dp ,end =36.dp)) {
 
                                     LogIn(navController)
 
@@ -181,15 +188,19 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     modifier = Modifier.align(
-                                        Alignment.CenterHorizontally)
+                                        Alignment.CenterHorizontally),
+                                        shape =RectangleShape,
+
+
 
                                     ) {
-                                        Text(text = "Sign in By Google", modifier = Modifier.align(Alignment.CenterVertically))
+                                        Text(textAlign = TextAlign.Center,text = "Sign in By Google", modifier = Modifier.align(Alignment.CenterVertically).fillMaxWidth(),)
 
                                     }
                                 }
                                 Button(onClick = { navController.navigate("sign_in") }, modifier =  Modifier.align(
-                                    Alignment.BottomCenter) ) {
+                                    Alignment.BottomCenter).fillMaxWidth().padding(start =36.dp ,end =36.dp) ,
+                                    shape =RectangleShape) {
                                     Text(text = "Create Account")
                                 }
                             }
@@ -204,20 +215,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
         var currentUser = auth.getCurrentUser()
-        //findNavController()
-        updateUI(currentUser);
     }
 
-    private fun updateUI(user: FirebaseUser?) {
-        Log.d("HEYYYYYYYYYYYYYYYY", user?.email ?: "huita")
-    }
+
 
 
     private val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
-            context = applicationContext,
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
     }
@@ -273,23 +278,26 @@ class MainActivity : ComponentActivity() {
         var email = rememberSaveable { mutableStateOf("") }
         var password = rememberSaveable { mutableStateOf("") }
         Box() {
-            Column(Modifier.align(Alignment.Center)) {
+            Column() {
                 Text(text = "Log In" , fontSize = 24.sp, modifier = Modifier.padding(bottom  =20.dp))
                 TextField(
                     value = email.value,
                     onValueChange = { email.value = it },
-                    modifier = Modifier.padding(bottom = 10.dp),
+                    modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(),
                     label  = { Text("Email") }
                 )
                 TextField(
                     value = password.value,
                     onValueChange = { password.value = it },
-                    label  = { Text("Password") })
+                    label  = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth().padding(bottom =16.dp)
+
+                )
 
 
 
 
-                Button(onClick = {logInUser(navController,email.value ,password.value)}, modifier =Modifier.align(Alignment.CenterHorizontally)) {
+                Button(onClick = {logInUser(navController,email.value ,password.value)}, modifier =Modifier.align(Alignment.CenterHorizontally).fillMaxWidth() ,shape =RectangleShape) {
 
                     Text("Log In",  )
 
@@ -306,7 +314,6 @@ class MainActivity : ComponentActivity() {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { signIn ->
                         if (signIn.isSuccessful) {
-                            //startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                             Toast.makeText(
                                 this@MainActivity,
                                 "sined in Successfuly",
@@ -336,12 +343,10 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    fun Profile(){
+    fun Profile(navController: NavController){
         val googleUser =googleAuthUiClient.getSignedInUser()
         val emailUser = firebaseUser
-        Log.d("askjdfhkdsahfklsjadf", googleUser?.username ?: "null")
-        Log.d("askjdfhkdsahfklsjadf", emailUser?.email ?: "netu")
-        
+
         
         
         Box(){
@@ -350,7 +355,7 @@ class MainActivity : ComponentActivity() {
 
                 Text("You signed-in as \n ${emailUser?.email}" , fontSize = 20.sp)
                 Button(onClick = { auth.signOut()
-                finish()
+                    navController.popBackStack()
                 }) {
                     Text("Sign Out")
                 }
